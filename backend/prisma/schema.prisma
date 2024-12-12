@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URL")
+}
+
+model User {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  firstName    String
+  lastName     String
+  email        String        @unique
+  password     String
+  username     String?       @unique
+  accountType  Role          @default(USER)
+  active       Boolean       @default(true)
+  profileId    String?       @unique @db.ObjectId
+  linkedWallet Wallet?       @relation
+  token        String?
+  image        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Transaction  Transaction[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Wallet {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @unique @db.ObjectId
+  user          User     @relation(fields: [userId], references: [id])
+  balance       Float    @default(0)
+  totalIncoming Float    @default(0)
+  totalOutgoing Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Transaction {
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  userId              String              @db.ObjectId
+  user                User                @relation(fields: [userId], references: [id])
+  type                TransactionType     @default(SEND)
+  amount              Float
+  category            TransactionCategory @default(OTHERS)
+  date                DateTime            @default(now())
+  recurringInterval   RecurringInterval   @default(NONE)
+  nextTransactionDate DateTime?
+  imageUrl            String?
+  description         String?
+}
+
+enum TransactionType {
+  SEND
+  RECEIVE
+}
+
+enum TransactionCategory {
+  SAVINGS
+  FOOD
+  SALARY
+  ENTERTAINMENT
+  UTILITIES
+  OTHERS
+}
+
+enum RecurringInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  NONE
+}
