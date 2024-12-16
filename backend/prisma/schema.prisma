@@ -16,7 +16,6 @@ model User {
   username     String?       @unique
   accountType  Role          @default(USER)
   active       Boolean       @default(true)
-  profileId    String?       @unique @db.ObjectId
   linkedWallet Wallet?       @relation
   token        String?
   image        String?

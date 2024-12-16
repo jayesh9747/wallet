@@ -10,14 +10,23 @@ exports.GetWalletDetails = async (req, res) => {
             where: { userId: id },
         });
 
+        const transaction = await prisma.transaction.findMany({
+            where: { userId: id },
+        })
+
         if (!wallet) {
             return res.status(404).json(
                 msgFunction(false, "Wallet not found for this user")
             );
         }
 
+        const result = {
+            wallet,
+            transaction
+        }
+
         return res.status(200).json(
-            msgFunction(true, "Wallet details fetched successfully", wallet)
+            msgFunction(true, "Wallet details fetched successfully", result)
         );
     } catch (error) {
         return res.status(500).json(

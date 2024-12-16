@@ -15,6 +15,9 @@ exports.AddTransaction = async (req, res) => {
             nextTransactionDate,
         } = req.body;
 
+
+        console.log('************************************************',req.files)
+
         // Check if the user's wallet exists
         const wallet = await prisma.wallet.findUnique({
             where: { userId: id },
